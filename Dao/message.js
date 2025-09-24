@@ -33,7 +33,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
     console.dir(message, { depth: null });
     if (res.type == "interactive" && payload.direction === "incoming") {
       let data = messageTrigger(
-        message?.interactive?.[message?.interactive]?.id
+        message?.interactive?.[message?.interactive?.type]?.id
       )({
         to: contact?.wa_id,
       });
