@@ -1,6 +1,8 @@
 const { success, failure } = require("../common/errorHandlers");
 const messageService = require("../service/message");
 
+const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+
 module.exports.sendMessage = (req, res) => {
   const receivedData = req.body;
   messageService.sendMessage(receivedData, function (err, data) {
@@ -10,4 +12,19 @@ module.exports.sendMessage = (req, res) => {
       return success(data, res);
     }
   });
+};
+
+module.exports.webhooks = (req, res) => {
+  const {
+    "hub.mode": mode,
+    "hub.challenge": challenge,
+    "hub.verify_token": token,
+  } = req.query;
+
+  if (mode === "subscribe" && token === VERIFY_TOKEN) {
+    console.log("WEBHOOK VERIFIED");
+    res.status(200).send(challenge);
+  } else {
+    res.status(403).end();
+  }
 };
