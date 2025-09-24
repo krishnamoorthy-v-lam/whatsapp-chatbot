@@ -106,6 +106,60 @@ module.exports.order1 = ({
   };
 };
 
+module.exports.order2 = ({
+  messaging_product = "whatsapp",
+  to,
+  type = "text",
+}) => {
+  // Validate required parameters
+  if (!to) {
+    throw new Error("Recipient phone number 'to' is required.");
+  }
+
+  return {
+    messaging_product,
+    to,
+    type,
+    text: { body: "Thank you for selecting track order 2" },
+  };
+};
+
+module.exports.order3 = ({
+  messaging_product = "whatsapp",
+  to,
+  type = "text",
+}) => {
+  // Validate required parameters
+  if (!to) {
+    throw new Error("Recipient phone number 'to' is required.");
+  }
+
+  return {
+    messaging_product,
+    to,
+    type,
+    text: { body: "Thank you for selecting track order 3" },
+  };
+};
+
+module.exports.talkSupport = ({
+  messaging_product = "whatsapp",
+  to,
+  type = "text",
+}) => {
+  // Validate required parameters
+  if (!to) {
+    throw new Error("Recipient phone number 'to' is required.");
+  }
+
+  return {
+    messaging_product,
+    to,
+    type,
+    text: { body: "Soon our team Memember conduct you ticket id: xxx-xxx" },
+  };
+};
+
 // {
 //     "messaging_product": "whatsapp",
 //     "to": "919750902797",

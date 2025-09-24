@@ -1,4 +1,12 @@
-const { firstMessage, initalSuggestion,trackOrder, order1 } = require("./SendMessage");
+const {
+  firstMessage,
+  initalSuggestion,
+  trackOrder,
+  order1,
+  order2,
+  order3,
+  talkSupport
+} = require("./SendMessage");
 
 module.exports.message = (type) => {
   console.log("type: ", type);
@@ -10,8 +18,14 @@ module.exports.message = (type) => {
     case "track_order":
       return trackOrder;
     case "order1":
-      return order1
+      return order1;
+    case "order2":
+      return order2;
+    case "order3":
+      return order3;
+    case "talk_support":
+      return talkSupport;
     default:
-      return ()=>{};
+      return () => {};
   }
 };
