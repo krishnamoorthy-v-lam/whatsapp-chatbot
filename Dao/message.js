@@ -42,11 +42,13 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
       });
 
       let response = await sendMessage(data);
+      this.saveSendMessage(response, payload);
     } else if (res.type == "text" && payload.direction === "incoming") {
       let data = messageTrigger()({
         to: contact?.wa_id,
       });
       let response = await sendMessage(data);
+      this.saveSendMessage(response, payload);
     }
 
     return callback(null, {
