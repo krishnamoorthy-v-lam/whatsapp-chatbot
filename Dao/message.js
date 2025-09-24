@@ -24,7 +24,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
       displayPhoneNumber: value.metadata.display_phone_number,
       messageId: message.id,
       type: message.type,
-      text: message.text?.body || message.interactive.button_reply.title,
+      text: message.text?.body || message?.interactive?.button_reply?.title,
       direction: "incoming",
       timestamp: new Date(message.timestamp * 1000),
     };
@@ -32,7 +32,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
     const res = await messageModel.create(payload);
     console.log("res: ", res);
 
-    if (res.type == "interactive") {
+    if (res.type == "interactive" && payload.direction === "incoming") {
       let data = messageTrigger(message.interactive.button_reply.id)({
         to: contact.wa_id,
       });
