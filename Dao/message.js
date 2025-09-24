@@ -23,17 +23,19 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
       displayPhoneNumber: value.metadata.display_phone_number,
       messageId: message.id,
       type: message.type,
-      text: message.text?.body || message?.interactive?.button_reply?.title,
+      text: message.text?.body || message?.interactive?.[message?.interactive]?.title,
       direction: "incoming",
       timestamp: new Date(message.timestamp * 1000),
     };
     // console.dir(payload, { depth: null });
     const res = await messageModel.create(payload);
     // console.log("res: ", res);
-    console.dir(message, {depth: null})
+    console.dir(message, { depth: null });
     if (res.type == "interactive" && payload.direction === "incoming") {
-      let data = messageTrigger(message?.interactive?.button_reply?.id)({
-        to: contact.wa_id,
+      let data = messageTrigger(
+        message?.interactive?.[message?.interactive]?.id
+      )({
+        to: contact?.wa_id,
       });
 
       let response = await sendMessage(data);
@@ -44,7 +46,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
       message: "Message Saved Successfully",
     });
   } catch (error) {
-    console.log("error", error.response?.data || error.message);
+    console.log("error", error?.response?.data || error.message);
   }
 };
 
