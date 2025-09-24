@@ -32,7 +32,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
     // console.dir(payload, { depth: null });
     const res = await messageModel.create(payload);
     // console.log("res: ", res);
-    console.dir(message, { depth: null });
+    // console.dir(message, { depth: null });
 
     if (res.type == "interactive" && payload.direction === "incoming") {
       let data = messageTrigger(
@@ -43,11 +43,10 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
 
       let response = await sendMessage(data);
     } else if (res.type == "text" && payload.direction === "incoming") {
-      console.log("check")
+
       let data = messageTrigger()({
         to: contact?.wa_id,
       });
-      console.log(data)
       let response = await sendMessage(data);
     }
 
