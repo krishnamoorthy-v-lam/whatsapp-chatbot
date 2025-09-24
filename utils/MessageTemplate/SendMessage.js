@@ -21,6 +21,73 @@ module.exports.firstMessage = ({
   };
 };
 
+module.exports.initalSuggestion = ({
+  messaging_product = "whatsapp",
+  to,
+  type = "interactive",
+}) => {
+  // Validate required parameters
+  if (!to) {
+    throw new Error("Recipient phone number 'to' is required.");
+  }
+
+  return {
+    messaging_product,
+    to,
+    type,
+    interactive: {
+      type: "button",
+      body: { text: "What do you want to do?" },
+      action: {
+        buttons: [
+          {
+            type: "reply",
+            reply: { id: "track_order", title: "Track Order" },
+          },
+          {
+            type: "reply",
+            reply: { id: "talk_support", title: "Talk to Support" },
+          },
+        ],
+      },
+    },
+  };
+};
+
+module.exports.trackOrder = ({
+  messaging_product = "whatsapp",
+  to,
+  type = "interactive",
+}) => {
+  // Validate required parameters
+  if (!to) {
+    throw new Error("Recipient phone number 'to' is required.");
+  }
+
+  return {
+    messaging_product,
+    to,
+    type,
+    interactive: {
+      type: "list",
+      body: { text: "Please choose one option:" },
+      action: {
+        button: "View Options",
+        sections: [
+          {
+            title: "Available Options",
+            rows: [
+              { id: "order1", title: "Order 1" },
+              { id: "order2", title: "Order 2" },
+              { id: "order3", title: "Order 3" },
+            ],
+          },
+        ],
+      },
+    },
+  };
+};
+
 // {
 //     "messaging_product": "whatsapp",
 //     "to": "919750902797",
@@ -37,9 +104,7 @@ module.exports.firstMessage = ({
 //      "text": { "body": "Hello Krishnamoorthy, what plan?" }
 // }
 
-
-
-//reply messae: 
+//reply messae:
 
 //  {
 //    object: 'whatsapp_business_account',

@@ -1,15 +1,16 @@
 const { firstMessage } = require("../utils/MessageTemplate/SendMessage");
+const { message } = require("../utils/MessageTemplate/Message");
 const { sendMessage } = require("../utils/WhatsappAPI/api");
 const MessageDao = require("../Dao/message");
 const axios = require("axios");
 
 module.exports.sendMessage = async (receivedData, callback) => {
   try {
-    const data = firstMessage({
-      to: receivedData?.phone,
-    });
+
+    let data = message(receivedData?.messageType)({ to: receivedData?.phone });
+
     let response = await sendMessage(data);
-    
+
     return callback(null, {
       error: false,
       data: response?.data,
