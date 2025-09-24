@@ -37,7 +37,7 @@ module.exports.receiveMessage = (req, res) => {
     if (err) {
       return res.sendStatus(403);
     } else {
-      return res.sendStatus(200)
+      return res.sendStatus(200); // it important becasue of only status code 200 it meta accept other wise it call the api multiple time to success it 
     }
   });
 };
