@@ -23,7 +23,9 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
       displayPhoneNumber: value.metadata.display_phone_number,
       messageId: message.id,
       type: message.type,
-      text: message.text?.body || message?.interactive?.[message?.interactive?.type]?.title,
+      text:
+        message.text?.body ||
+        message?.interactive?.[message?.interactive?.type]?.title,
       direction: "incoming",
       timestamp: new Date(message.timestamp * 1000),
     };
@@ -31,6 +33,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
     const res = await messageModel.create(payload);
     // console.log("res: ", res);
     console.dir(message, { depth: null });
+
     if (res.type == "interactive" && payload.direction === "incoming") {
       let data = messageTrigger(
         message?.interactive?.[message?.interactive?.type]?.id
@@ -38,6 +41,13 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
         to: contact?.wa_id,
       });
 
+      let response = await sendMessage(data);
+    } else if (res.type == "text" && payload.direction === "incoming") {
+      console.log("check")
+      let data = messageTrigger()({
+        to: contact?.wa_id,
+      });
+      console.log(data)
       let response = await sendMessage(data);
     }
 

@@ -26,6 +26,6 @@ module.exports.message = (type) => {
     case "talk_support":
       return talkSupport;
     default:
-      return () => {};
+      return initalSuggestion;
   }
 };
