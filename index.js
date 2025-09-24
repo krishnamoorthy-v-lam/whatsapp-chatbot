@@ -1,6 +1,7 @@
 const Express = require("express");
 const bodyParser = require("body-parser");
 const mainRoute = require("./routes.js");
+var mongoose = require("mongoose");
 
 const { firstMessage } = require("./utils/MessageTemplate/SendMessage");
 const { sendMessage } = require("./utils/WhatsappAPI/api");
@@ -9,6 +10,15 @@ require("dotenv").config();
 
 const app = new Express();
 app.use(bodyParser.json());
+
+
+mongoose
+  .connect(process.env.mongoURL, {})
+  .then(async () => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => console.error("Could not connect to MongoDB", err));
+
 
 app.use("/", (req, res, next) => {
   console.log(req.method, "  ", req.url);
