@@ -32,6 +32,6 @@ module.exports.webhooks = (req, res) => {
 module.exports.receiveMessage = (req, res) => {
   let receivedData = req?.body;
   let query = req?.query;
-  console.log("data: ", receivedData);
+  console.dir(receivedData, { depth: null });
   res?.sendStatus(200);
 };
