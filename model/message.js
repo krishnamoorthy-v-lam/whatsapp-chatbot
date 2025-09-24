@@ -33,7 +33,7 @@ const messageSchema = new mongoose.Schema(
       // WhatsApp's message id
       type: String,
       required: true,
-      unique: true,
+    //   unique: true,
     },
     type: {
       type: String,
