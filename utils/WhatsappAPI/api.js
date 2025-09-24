@@ -9,6 +9,5 @@ module.exports.sendMessage = function (data) {
     },
     data: data,
   };
-  console.log("config: ", config)
   return axios(config);
 };
