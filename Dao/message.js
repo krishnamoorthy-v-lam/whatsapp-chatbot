@@ -38,7 +38,6 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
       });
 
       let response = await sendMessage(data);
-      console.log("message sended: ", response);
     }
     console.groupEnd("save");
     return callback(null, {
