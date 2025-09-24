@@ -35,9 +35,9 @@ module.exports.receiveMessage = (req, res) => {
   // console.dir(receivedData, { depth: null });
   messageService.saveReceivedMessage(receivedData, function (err, data) {
     if (err) {
-      return res.status(403).end();
+      return res.sendStatus(403);
     } else {
-      return res.status(200)
+      return res.sendStatus(200)
     }
   });
 };

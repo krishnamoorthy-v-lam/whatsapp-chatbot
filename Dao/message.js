@@ -1,5 +1,5 @@
 const messageModel = require("../model/message");
-const {message: messageTrigger} = require("../utils/MessageTemplate/Message");
+const { message: messageTrigger } = require("../utils/MessageTemplate/Message");
 const { sendMessage } = require("../utils/WhatsappAPI/api");
 
 module.exports.saveReceivedMessage = async (receivedData, callback) => {
@@ -45,7 +45,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
       message: "Message Saved Successfully",
     });
   } catch (error) {
-    console.log("error", error);
+    console.log("error", error.response?.data || error.message);
   }
 };
 
