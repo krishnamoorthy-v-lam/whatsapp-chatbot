@@ -88,6 +88,24 @@ module.exports.trackOrder = ({
   };
 };
 
+module.exports.order1 = ({
+  messaging_product = "whatsapp",
+  to,
+  type = "text",
+}) => {
+  // Validate required parameters
+  if (!to) {
+    throw new Error("Recipient phone number 'to' is required.");
+  }
+
+  return {
+    messaging_product,
+    to,
+    type,
+    text: { body: "Thank you for selecting track order 1" },
+  };
+};
+
 // {
 //     "messaging_product": "whatsapp",
 //     "to": "919750902797",

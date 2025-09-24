@@ -1,4 +1,4 @@
-const { firstMessage, initalSuggestion,trackOrder } = require("./SendMessage");
+const { firstMessage, initalSuggestion,trackOrder, order1 } = require("./SendMessage");
 
 module.exports.message = (type) => {
   console.log("type: ", type);
@@ -9,6 +9,8 @@ module.exports.message = (type) => {
       return initalSuggestion;
     case "track_order":
       return trackOrder;
+    case "order1":
+      return order1
     default:
       return ()=>{};
   }
