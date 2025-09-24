@@ -4,6 +4,7 @@ const { sendMessage } = require("../utils/WhatsappAPI/api");
 
 module.exports.saveReceivedMessage = async (receivedData, callback) => {
   try {
+    console.group("save")
     const value = receivedData.entry[0].changes[0].value;
 
     const message = value.messages?.[0];
@@ -30,6 +31,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
     console.dir( payload, {depth: null})
     const res = await messageModel.create(payload);
     console.log("res: ", res)
+    
     if (res.type == "interactive") {
       let data = messageTrigger(message.interactive.button_reply.id)({
         to: contact.wa_id,
@@ -38,7 +40,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
       let response = await sendMessage(data);
       console.log("message sended: ", response);
     }
-
+    console.groupEnd("save")
     return callback(null, {
       error: false,
       message: "Message Saved Successfully",
