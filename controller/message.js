@@ -32,7 +32,7 @@ module.exports.webhooks = (req, res) => {
 module.exports.receiveMessage = (req, res) => {
   let receivedData = req?.body;
   let query = req?.query;
-  console.dir(receivedData, { depth: null });
+  // console.dir(receivedData, { depth: null });
   messageService.saveReceivedMessage(receivedData, function (err, data) {
     if (err) {
       return res.status(200);
