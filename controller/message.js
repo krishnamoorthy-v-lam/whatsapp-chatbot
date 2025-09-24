@@ -28,3 +28,10 @@ module.exports.webhooks = (req, res) => {
     res.status(403).end();
   }
 };
+
+module.exports.receiveMessage = (req, res) => {
+  let receivedData = req?.body;
+  let query = req?.query;
+  console.log("data: ", receivedData);
+  res?.sendStatus(200);
+};

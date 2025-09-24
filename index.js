@@ -9,7 +9,15 @@ require("dotenv").config();
 
 const app = new Express();
 app.use(bodyParser.json());
+
+app.use("/", (req, res, next) => {
+  console.log(req.method, "  ", req.url);
+  next();
+});
+
 app.use("/api/wa", mainRoute);
+
+
 
 // Webhook endpoint to receive messages
 // app.post("/webhook", (req, res) => {
@@ -17,10 +25,6 @@ app.use("/api/wa", mainRoute);
 //   res.sendStatus(200); // Respond to Meta
 // });
 
-app.use("/", (req, res, next) => {
-  console.log(req.method, "  ", req.url);
-  next();
-});
 
 // app.get("/send-message", async (req, res) => {
 //   let receivedData = req.body;
