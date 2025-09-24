@@ -30,7 +30,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
     // console.dir(payload, { depth: null });
     const res = await messageModel.create(payload);
     // console.log("res: ", res);
-    console.log("message: ", message)
+    console.dir(message, {depth: null})
     if (res.type == "interactive" && payload.direction === "incoming") {
       let data = messageTrigger(message?.interactive?.button_reply?.id)({
         to: contact.wa_id,
