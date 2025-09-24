@@ -10,7 +10,7 @@ module.exports.sendMessage = async (receivedData, callback) => {
     let data = message(receivedData?.messageType)({ to: receivedData?.phone });
 
     let response = await sendMessage(data);
-
+    await MessageDao.saveSendMessage(response, data)
     return callback(null, {
       error: false,
       data: response?.data,

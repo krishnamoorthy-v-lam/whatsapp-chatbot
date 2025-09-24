@@ -43,7 +43,6 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
 
       let response = await sendMessage(data);
     } else if (res.type == "text" && payload.direction === "incoming") {
-
       let data = messageTrigger()({
         to: contact?.wa_id,
       });
@@ -59,39 +58,41 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
   }
 };
 
-module.exports.saveSendMessage = async (receivedData, callback) => {
+module.exports.saveSendMessage = async (receivedData, payloadData) => {
   try {
-    const value = receivedData.entry[0].changes[0].value;
+    const value = receivedData.data;
+    if (!value) {
+      return { error: true, message: "Invalid payload: missing value" };
+    }
 
     const message = value.messages?.[0];
     const contact = value.contacts?.[0];
 
     if (!message) {
-      return callback({
-        error: true,
-        message: "something went wrong",
-      });
+      return { error: true, message: "No messages or contacts found" };
     }
 
-    let payload = {
+    const payload = {
       waId: contact.wa_id,
       profileName: contact.profile?.name,
-      phoneNumberId: value.metadata.phone_number_id,
-      displayPhoneNumber: value.metadata.display_phone_number,
+      phoneNumberId: process.env.PHONE_NUMBER_ID,
+      displayPhoneNumber: process.env.DISPLAY_PHONE_NUMBER,
       messageId: message.id,
-      type: message.type,
-      text: message.text?.body,
-      direction: "incoming",
-      timestamp: new Date(message.timestamp * 1000),
+      type: payloadData.type,
+      text: message.text?.body || null,
+      interactive: payloadData.interactive || null,
+      direction: "outgoing",
+      timestamp: new Date(),
     };
 
     const res = await messageModel.create(payload);
 
-    return callback(null, {
+    return {
       error: false,
-      message: "Message Saved Successfully",
-    });
+      message: "Message(s) saved successfully",
+    };
   } catch (error) {
-    console.log("error", error);
+    console.error("Error saving message:", error);
+    return { error: true, message: error.message || "Unknown error" };
   }
 };

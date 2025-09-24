@@ -28,7 +28,9 @@ const messageSchema = new mongoose.Schema(
     },
 
     // Message details
-
+    interactive: {
+      type: Object,
+    },
     messageId: {
       // WhatsApp's message id
       type: String,
