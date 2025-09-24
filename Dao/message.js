@@ -23,7 +23,7 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
       displayPhoneNumber: value.metadata.display_phone_number,
       messageId: message.id,
       type: message.type,
-      text: message.text?.body || message?.interactive?.[message?.interactive]?.title,
+      text: message.text?.body || message?.interactive?.[message?.interactive?.type]?.title,
       direction: "incoming",
       timestamp: new Date(message.timestamp * 1000),
     };
