@@ -117,10 +117,11 @@ module.exports.getMessage = async (query, callback) => {
       },
       {
         $project: {
-          receiver: "$waId",
+          waId: 1,
           message: "$text",
-          sender: "$displayPhoneNumber",
-          messageId: "$messageId",
+          displayPhoneNumber: 1,
+          messageId: 1,
+          direction: 1,
         },
       },
       {

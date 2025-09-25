@@ -4,7 +4,7 @@ const { sendMessage } = require("../utils/WhatsappAPI/api");
 const MessageDao = require("../Dao/message");
 const axios = require("axios");
 
-module.exports.sendMessage = async (receivedData, callback) => {
+module.exports.sendMessage = async (receivedData, io, callback) => {
   try {
     let data = message(receivedData?.messageType)({
       to: receivedData?.phone,
@@ -13,6 +13,7 @@ module.exports.sendMessage = async (receivedData, callback) => {
 
     let response = await sendMessage(data);
     await MessageDao.saveSendMessage(response, data);
+    io.emit("message_sent", data)
     return callback(null, {
       error: false,
       data: response?.data,

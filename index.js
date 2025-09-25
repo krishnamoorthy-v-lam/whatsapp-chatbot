@@ -1,16 +1,17 @@
 const Express = require("express");
 const bodyParser = require("body-parser");
 const mainRoute = require("./routes.js");
+const { createServer } = require( "http");
+const { Server } = require("socket.io");
 const cors = require("cors");
 
 var mongoose = require("mongoose");
 
-const { firstMessage } = require("./utils/MessageTemplate/SendMessage");
-const { sendMessage } = require("./utils/WhatsappAPI/api");
 require("dotenv").config();
 const config = require("./common/Config.js");
 
 const app = new Express();
+const httpServer = createServer(app);
 app.use(bodyParser.json());
 
 mongoose
@@ -35,30 +36,38 @@ app.use((req, res, next) => {
   next();
 });
 
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*", 
+    methods: ["GET", "POST"],
+  },
+});
+
+// Socket.IO connection handling
+io.on("connection", (socket) => {
+  console.log("⚡ New client connected:", socket.id);
+
+  socket.on("send_message", (msg) => {
+    console.log("📩 Message received:", msg);
+    io.emit("receive_message", msg);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("❌ Client disconnected:", socket.id);
+  });
+});
+
+
+app.set("io", io);
+
+
+
 app.use("/api/wa", mainRoute);
 
-// Webhook endpoint to receive messages
-// app.post("/webhook", (req, res) => {
-//   console.log("Incoming message:", JSON.stringify(req.body, null, 2));
-//   res.sendStatus(200); // Respond to Meta
-// });
 
-// app.get("/send-message", async (req, res) => {
-//   let receivedData = req.body;
-//   try {
-//     const data = firstMessage({
-//       to: receivedData?.phone,
-//     });
-//     let response = await sendMessage(data);
-
-//     res.json(response.data);
-//   } catch (error) {
-//     console.error(error.response?.data || error.message);
-//     res.status(500).send(error.response?.data || error.message);
-//   }
-// });
 
 // Start server
-app.listen(process.env.PORT, () => {
+httpServer.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });

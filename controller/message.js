@@ -5,7 +5,8 @@ const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 module.exports.sendMessage = (req, res) => {
   const receivedData = req.body;
-  messageService.sendMessage(receivedData, function (err, data) {
+  const io = req.app.get("io");
+  messageService.sendMessage(receivedData, io, function (err, data) {
     if (err) {
       return failure(err, res);
     } else {
@@ -43,6 +44,9 @@ module.exports.webhooks = (req, res) => {
 module.exports.receiveMessage = (req, res) => {
   let receivedData = req?.body;
   let query = req?.query;
+  const io = req.app.get("io");
+  io.emit("new-mesg", receivedData)
+  console.log(receivedData)
   messageService.saveReceivedMessage(receivedData, function (err, data) {
     if (err) {
       return res.sendStatus(403);
