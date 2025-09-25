@@ -6,7 +6,7 @@ const config = require("../common/Config.js");
 module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
   try {
     const value = receivedData.entry[0].changes[0].value;
-
+    console.dir(receivedData, {depth: null})
     const message = value.messages?.[0];
     const contact = value.contacts?.[0];
 
