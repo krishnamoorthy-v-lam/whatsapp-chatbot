@@ -35,8 +35,8 @@ module.exports.getMessage = async (query, callback) => {
   });
 };
 
-module.exports.saveReceivedMessage = (receivedData, callback) => {
-  MessageDao.saveReceivedMessage(receivedData, function (err, data) {
+module.exports.saveReceivedMessage = (receivedData, io, callback) => {
+  MessageDao.saveReceivedMessage(receivedData, io, function (err, data) {
     if (err) {
       callback(err);
     } else {

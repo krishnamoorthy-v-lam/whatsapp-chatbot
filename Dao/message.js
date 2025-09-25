@@ -3,7 +3,7 @@ const { message: messageTrigger } = require("../utils/MessageTemplate/Message");
 const { sendMessage } = require("../utils/WhatsappAPI/api");
 const config = require("../common/Config.js");
 
-module.exports.saveReceivedMessage = async (receivedData, callback) => {
+module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
   try {
     const value = receivedData.entry[0].changes[0].value;
 
@@ -32,11 +32,12 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
     };
 
     const res = await messageModel.create(payload);
-    console.log(
-      "condition: ",
-      config.PERSON_TO_PERSON,
-      payload?.displayPhoneNumber
-    );
+    // console.log(
+    //   "condition: ",
+    //   config.PERSON_TO_PERSON,
+    //   payload?.displayPhoneNumber
+    // );
+
     if (config.PERSON_TO_PERSON != payload?.displayPhoneNumber) {
       if (res.type == "interactive" && payload.direction === "incoming") {
         let data = messageTrigger(
@@ -54,6 +55,14 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
         let response = await sendMessage(data);
         this.saveSendMessage(response, payload);
       }
+    } else {
+      io.emit("new-mesg", {
+        waId: res?.waId,
+        message: res?.text,
+        displayPhoneNumber: res?.displayPhoneNumber,
+        messageId: res?.messageId,
+        direction: res?.direction,
+      });
     }
 
     return callback(null, {

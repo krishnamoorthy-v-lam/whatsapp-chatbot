@@ -45,10 +45,8 @@ module.exports.receiveMessage = (req, res) => {
   let receivedData = req?.body;
   let query = req?.query;
   const io = req.app.get("io");
-  io.emit("new-mesg", receivedData)
-  console.log(io, "....")
-  console.dir(receivedData, {depth: null})
-  messageService.saveReceivedMessage(receivedData, function (err, data) {
+
+  messageService.saveReceivedMessage(receivedData, io, function (err, data) {
     if (err) {
       return res.sendStatus(403);
     } else {
