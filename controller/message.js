@@ -14,6 +14,17 @@ module.exports.sendMessage = (req, res) => {
   });
 };
 
+module.exports.getMessage = (req, res) => {
+  const query = req?.query;
+  messageService.getMessage(query, function (err, data) {
+    if (err) {
+      return failure(err, res);
+    } else {
+      return success(data, res);
+    }
+  });
+};
+
 module.exports.webhooks = (req, res) => {
   const {
     "hub.mode": mode,
@@ -32,12 +43,11 @@ module.exports.webhooks = (req, res) => {
 module.exports.receiveMessage = (req, res) => {
   let receivedData = req?.body;
   let query = req?.query;
-  // console.dir(receivedData, { depth: null });
   messageService.saveReceivedMessage(receivedData, function (err, data) {
     if (err) {
       return res.sendStatus(403);
     } else {
-      return res.sendStatus(200); // it important becasue of only status code 200 it meta accept other wise it call the api multiple time to success it 
+      return res.sendStatus(200); // it important becasue of only status code 200 it meta accept other wise it call the api multiple time to success it
     }
   });
 };

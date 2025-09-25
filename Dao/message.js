@@ -1,6 +1,7 @@
 const messageModel = require("../model/message");
 const { message: messageTrigger } = require("../utils/MessageTemplate/Message");
 const { sendMessage } = require("../utils/WhatsappAPI/api");
+const config = require("../common/Config.js");
 
 module.exports.saveReceivedMessage = async (receivedData, callback) => {
   try {
@@ -29,26 +30,30 @@ module.exports.saveReceivedMessage = async (receivedData, callback) => {
       direction: "incoming",
       timestamp: new Date(message.timestamp * 1000),
     };
-    // console.dir(payload, { depth: null });
+
     const res = await messageModel.create(payload);
-    // console.log("res: ", res);
-    // console.dir(message, { depth: null });
+    console.log(
+      "condition: ",
+      config.PERSON_TO_PERSON,
+      payload?.displayPhoneNumber
+    );
+    if (config.PERSON_TO_PERSON != payload?.displayPhoneNumber) {
+      if (res.type == "interactive" && payload.direction === "incoming") {
+        let data = messageTrigger(
+          message?.interactive?.[message?.interactive?.type]?.id
+        )({
+          to: contact?.wa_id,
+        });
 
-    if (res.type == "interactive" && payload.direction === "incoming") {
-      let data = messageTrigger(
-        message?.interactive?.[message?.interactive?.type]?.id
-      )({
-        to: contact?.wa_id,
-      });
-
-      let response = await sendMessage(data);
-      this.saveSendMessage(response, payload);
-    } else if (res.type == "text" && payload.direction === "incoming") {
-      let data = messageTrigger()({
-        to: contact?.wa_id,
-      });
-      let response = await sendMessage(data);
-      this.saveSendMessage(response, payload);
+        let response = await sendMessage(data);
+        this.saveSendMessage(response, payload);
+      } else if (res.type == "text" && payload.direction === "incoming") {
+        let data = messageTrigger()({
+          to: contact?.wa_id,
+        });
+        let response = await sendMessage(data);
+        this.saveSendMessage(response, payload);
+      }
     }
 
     return callback(null, {
@@ -81,7 +86,7 @@ module.exports.saveSendMessage = async (receivedData, payloadData) => {
       displayPhoneNumber: process.env.DISPLAY_PHONE_NUMBER,
       messageId: message.id,
       type: payloadData.type,
-      text: message.text?.body || null,
+      text: payloadData.text?.body || null,
       interactive: payloadData.interactive || null,
       direction: "outgoing",
       timestamp: new Date(),
@@ -96,5 +101,43 @@ module.exports.saveSendMessage = async (receivedData, payloadData) => {
   } catch (error) {
     console.error("Error saving message:", error);
     return { error: true, message: error.message || "Unknown error" };
+  }
+};
+
+module.exports.getMessage = async (query, callback) => {
+  try {
+    let { phone } = query;
+    let matchQuery = {};
+    if (phone) {
+      matchQuery["waId"] = phone;
+    }
+    let pipline = [
+      {
+        $match: matchQuery,
+      },
+      {
+        $project: {
+          receiver: "$waId",
+          message: "$text",
+          sender: "$displayPhoneNumber",
+          messageId: "$messageId",
+        },
+      },
+      {
+        $sort: {
+          createdAt: 1,
+        },
+      },
+    ];
+    let res = await messageModel.aggregate(pipline);
+
+    return callback(null, {
+      error: false,
+      data: res,
+      message: "Data Retrived Successfully",
+    });
+  } catch (error) {
+    console.log("error: ", error);
+    callback(error);
   }
 };

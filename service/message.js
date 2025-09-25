@@ -6,11 +6,13 @@ const axios = require("axios");
 
 module.exports.sendMessage = async (receivedData, callback) => {
   try {
-
-    let data = message(receivedData?.messageType)({ to: receivedData?.phone });
+    let data = message(receivedData?.messageType)({
+      to: receivedData?.phone,
+      body: receivedData?.message,
+    });
 
     let response = await sendMessage(data);
-    await MessageDao.saveSendMessage(response, data)
+    await MessageDao.saveSendMessage(response, data);
     return callback(null, {
       error: false,
       data: response?.data,
@@ -20,6 +22,16 @@ module.exports.sendMessage = async (receivedData, callback) => {
     console.error(error.response?.data || error.message);
     return callback(error.response?.data || error.message);
   }
+};
+
+module.exports.getMessage = async (query, callback) => {
+  MessageDao.getMessage(query, function (err, data) {
+    if (err) {
+      callback(err);
+    } else {
+      callback(null, data);
+    }
+  });
 };
 
 module.exports.saveReceivedMessage = (receivedData, callback) => {

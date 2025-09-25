@@ -160,6 +160,24 @@ module.exports.talkSupport = ({
   };
 };
 
+module.exports.conversationMessage = ({
+  messaging_product = "whatsapp",
+  to,
+  type = "text",
+  body = "message...",
+}) => {
+  // Validate required parameters
+  if (!to) {
+    throw new Error("Recipient phone number 'to' is required.");
+  }
+
+  return {
+    messaging_product,
+    to,
+    type,
+    text: { body },
+  };
+};
 // {
 //     "messaging_product": "whatsapp",
 //     "to": "919750902797",

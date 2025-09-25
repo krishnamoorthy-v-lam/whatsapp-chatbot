@@ -5,7 +5,8 @@ const {
   order1,
   order2,
   order3,
-  talkSupport
+  talkSupport,
+  conversationMessage,
 } = require("./SendMessage");
 
 module.exports.message = (type) => {
@@ -25,6 +26,8 @@ module.exports.message = (type) => {
       return order3;
     case "talk_support":
       return talkSupport;
+    case "conversationMessage":
+      return conversationMessage;
     default:
       return initalSuggestion;
   }
