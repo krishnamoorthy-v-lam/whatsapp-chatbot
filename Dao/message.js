@@ -30,7 +30,7 @@ module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
         message?.interactive?.[message?.interactive?.type]?.title,
       status: message?.status,
       direction: "incoming",
-      timestamp: new Date(timestamp * 1000),
+      timestamp: new Date(message?.timestamp * 1000),
     };
     let res = {};
     if (status?.id) {
@@ -129,7 +129,7 @@ module.exports.saveSendMessage = async (receivedData, payloadData) => {
       interactive: payloadData?.interactive || null,
       client_ref: payloadData?.client_ref,
       direction: "outgoing",
-      timestamp: new Date(),
+      timestamp: new Date(message?.timestamp * 1000),
     };
 
     const res = await messageModel.create(payload);
