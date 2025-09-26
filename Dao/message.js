@@ -6,7 +6,7 @@ const config = require("../common/Config.js");
 module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
   try {
     const value = receivedData.entry[0].changes[0].value;
-    // console.dir(receivedData, { depth: null });
+    console.dir(receivedData, { depth: null });
     const message = value.messages?.[0];
     const contact = value.contacts?.[0];
     const status = value.statuses?.[0];
@@ -44,7 +44,6 @@ module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
           new: true,
         }
       );
-
     } else {
       res = await messageModel.create(payload);
     }
@@ -55,44 +54,46 @@ module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
     //   payload?.displayPhoneNumber
     // );
 
-    if (config.PERSON_TO_PERSON != payload?.displayPhoneNumber && !status?.id) {
-      console.log("status id")
-      if (res.type == "interactive" && payload.direction === "incoming") {
-        let data = messageTrigger(
-          message?.interactive?.[message?.interactive?.type]?.id
-        )({
-          to: contact?.wa_id,
-        });
+    if (!status?.id) {
+      if (config.PERSON_TO_PERSON != payload?.displayPhoneNumber) {
+        if (res.type == "interactive" && payload.direction === "incoming") {
+          let data = messageTrigger(
+            message?.interactive?.[message?.interactive?.type]?.id
+          )({
+            to: contact?.wa_id,
+          });
 
-        let response = await sendMessage(data);
-        this.saveSendMessage(response, payload);
-      } else if (res.type == "text" && payload.direction === "incoming") {
-        let data = messageTrigger()({
-          to: contact?.wa_id,
+          let response = await sendMessage(data);
+          this.saveSendMessage(response, payload);
+        } else if (res.type == "text" && payload.direction === "incoming") {
+          let data = messageTrigger()({
+            to: contact?.wa_id,
+          });
+          let response = await sendMessage(data);
+          this.saveSendMessage(response, payload);
+        }
+      } else {
+        io.emit("new-mesg", {
+          waId: res?.waId,
+          message: res?.text,
+          displayPhoneNumber: res?.displayPhoneNumber,
+          messageId: res?.messageId,
+          direction: res?.direction,
         });
-        let response = await sendMessage(data);
-        this.saveSendMessage(response, payload);
       }
-    } else if(message?.messageId) {
-      io.emit("new-mesg", {
-        waId: res?.waId,
-        message: res?.text,
-        displayPhoneNumber: res?.displayPhoneNumber,
-        messageId: res?.messageId,
-        direction: res?.direction,
-      });
     }
+
     return callback(null, {
       error: false,
       message: "Message Saved Successfully",
     });
   } catch (error) {
     // console.log("error", error?.response?.data || error.message);
-    console.log(error)
+    console.log(error);
     return callback({
       error: true,
-      message: error?.message
-    })
+      message: error?.message,
+    });
   }
 };
 
