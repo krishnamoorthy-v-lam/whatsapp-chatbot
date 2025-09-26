@@ -170,6 +170,7 @@ module.exports.getMessage = async (query, callback) => {
           displayPhoneNumber: 1,
           messageId: 1,
           direction: 1,
+          status: 1,
         },
       },
       {
