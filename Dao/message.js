@@ -6,9 +6,10 @@ const config = require("../common/Config.js");
 module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
   try {
     const value = receivedData.entry[0].changes[0].value;
-    // console.dir(receivedData, { depth: null });
+    console.dir(receivedData, { depth: null });
     const message = value.messages?.[0];
     const contact = value.contacts?.[0];
+    const status = value.statuses?.[0];
 
     if (!message) {
       return callback({
@@ -27,11 +28,25 @@ module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
       text:
         message.text?.body ||
         message?.interactive?.[message?.interactive?.type]?.title,
+      status: message?.status,
       direction: "incoming",
-      timestamp: new Date(message.timestamp * 1000),
+      timestamp: new Date(timestamp * 1000),
     };
+    let res = {};
+    if (status?.id) {
+      res = await messageModel.findOneAndUpdate(
+        { messageId: payload?.messageId },
+        {
+          ...payload,
+        },
+        {
+          new: true,
+        }
+      );
+    } else {
+      res = await messageModel.create(payload);
+    }
 
-    const res = await messageModel.create(payload);
     // console.log(
     //   "condition: ",
     //   config.PERSON_TO_PERSON,
