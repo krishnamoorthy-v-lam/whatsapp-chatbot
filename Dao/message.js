@@ -6,12 +6,12 @@ const config = require("../common/Config.js");
 module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
   try {
     const value = receivedData.entry[0].changes[0].value;
-    console.dir(receivedData, { depth: null });
+    // console.dir(receivedData, { depth: null });
     const message = value.messages?.[0];
     const contact = value.contacts?.[0];
     const status = value.statuses?.[0];
 
-    if (!message) {
+    if (!message && !status) {
       return callback({
         error: true,
         message: "something went wrong",
@@ -19,30 +19,32 @@ module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
     }
 
     let payload = {
-      waId: contact.wa_id,
-      profileName: contact.profile?.name,
-      phoneNumberId: value.metadata.phone_number_id,
-      displayPhoneNumber: value.metadata.display_phone_number,
-      messageId: message.id,
-      type: message.type,
+      waId: contact?.wa_id,
+      profileName: contact?.profile?.name,
+      phoneNumberId: value?.metadata?.phone_number_id,
+      displayPhoneNumber: value?.metadata?.display_phone_number,
+      messageId: message?.id,
+      type: message?.type,
       text:
-        message.text?.body ||
+        message?.text?.body ||
         message?.interactive?.[message?.interactive?.type]?.title,
       status: message?.status,
       direction: "incoming",
       timestamp: new Date(message?.timestamp * 1000),
     };
     let res = {};
+
     if (status?.id) {
       res = await messageModel.findOneAndUpdate(
-        { messageId: payload?.messageId },
+        { messageId: status?.id },
         {
-          ...payload,
+          status: status.status,
         },
         {
           new: true,
         }
       );
+
     } else {
       res = await messageModel.create(payload);
     }
@@ -53,7 +55,8 @@ module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
     //   payload?.displayPhoneNumber
     // );
 
-    if (config.PERSON_TO_PERSON != payload?.displayPhoneNumber) {
+    if (config.PERSON_TO_PERSON != payload?.displayPhoneNumber && !status?.id) {
+      console.log("status id")
       if (res.type == "interactive" && payload.direction === "incoming") {
         let data = messageTrigger(
           message?.interactive?.[message?.interactive?.type]?.id
@@ -70,7 +73,7 @@ module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
         let response = await sendMessage(data);
         this.saveSendMessage(response, payload);
       }
-    } else {
+    } else if(message?.messageId) {
       io.emit("new-mesg", {
         waId: res?.waId,
         message: res?.text,
@@ -79,13 +82,17 @@ module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
         direction: res?.direction,
       });
     }
-
     return callback(null, {
       error: false,
       message: "Message Saved Successfully",
     });
   } catch (error) {
-    console.log("error", error?.response?.data || error.message);
+    // console.log("error", error?.response?.data || error.message);
+    console.log(error)
+    return callback({
+      error: true,
+      message: error?.message
+    })
   }
 };
 
@@ -129,7 +136,7 @@ module.exports.saveSendMessage = async (receivedData, payloadData) => {
       interactive: payloadData?.interactive || null,
       client_ref: payloadData?.client_ref,
       direction: "outgoing",
-      timestamp: new Date(message?.timestamp * 1000),
+      timestamp: new Date(),
     };
 
     const res = await messageModel.create(payload);
