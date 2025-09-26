@@ -41,12 +41,41 @@ module.exports.webhooks = (req, res) => {
   }
 };
 
+module.exports.humanAgentHooks = (req, res) => {
+  const {
+    "hub.mode": mode,
+    "hub.challenge": challenge,
+    "hub.verify_token": token,
+  } = req.query;
+
+  if (mode === "subscribe" && token === VERIFY_TOKEN) {
+    console.log("Human Agent WEBHOOK VERIFIED");
+    res.status(200).send(challenge);
+  } else {
+    res.status(403).end();
+  }
+};
+
 module.exports.receiveMessage = (req, res) => {
   let receivedData = req?.body;
   let query = req?.query;
   const io = req.app.get("io");
 
   messageService.saveReceivedMessage(receivedData, io, function (err, data) {
+    if (err) {
+      return res.sendStatus(403);
+    } else {
+      return res.sendStatus(200); // it important becasue of only status code 200 it meta accept other wise it call the api multiple time to success it
+    }
+  });
+};
+
+module.exports.humanAgentReceiveMessage = (req, res) => {
+  let receivedData = req?.body;
+  let query = req?.query;
+  const io = req.app.get("io");
+
+  messageService.saveHumanAgentReceivedMessage(receivedData, io, function (err, data) {
     if (err) {
       return res.sendStatus(403);
     } else {

@@ -10,10 +10,10 @@ module.exports.sendMessage = async (receivedData, io, callback) => {
       to: receivedData?.phone,
       body: receivedData?.message,
     });
-
+    console.dir(data, { depth: null });
     let response = await sendMessage(data);
     await MessageDao.saveSendMessage(response, data);
-    io.emit("message_sent", data)
+    io.emit("message_sent", data);
     return callback(null, {
       error: false,
       data: response?.data,
@@ -43,4 +43,18 @@ module.exports.saveReceivedMessage = (receivedData, io, callback) => {
       callback(null, data);
     }
   });
+};
+
+module.exports.saveHumanAgentReceivedMessage = (receivedData, io, callback) => {
+  MessageDao.saveHumanAgentReceivedMessage(
+    receivedData,
+    io,
+    function (err, data) {
+      if (err) {
+        callback(err);
+      } else {
+        callback(null, data);
+      }
+    }
+  );
 };

@@ -6,7 +6,7 @@ const config = require("../common/Config.js");
 module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
   try {
     const value = receivedData.entry[0].changes[0].value;
-    console.dir(receivedData, {depth: null})
+    // console.dir(receivedData, { depth: null });
     const message = value.messages?.[0];
     const contact = value.contacts?.[0];
 
@@ -71,6 +71,21 @@ module.exports.saveReceivedMessage = async (receivedData, io, callback) => {
     });
   } catch (error) {
     console.log("error", error?.response?.data || error.message);
+  }
+};
+
+module.exports.saveHumanAgentReceivedMessage = async (
+  receivedData,
+  callback
+) => {
+  try {
+    console.dir(receivedData, { depth: null });
+    return callback({
+      error: false,
+      message: "success",
+    });
+  } catch (error) {
+    callback(error);
   }
 };
 

@@ -176,6 +176,7 @@ module.exports.conversationMessage = ({
     to,
     type,
     text: { body },
+    client_ref: Number(new Date())
   };
 };
 // {
