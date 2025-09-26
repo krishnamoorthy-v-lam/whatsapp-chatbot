@@ -1,3 +1,4 @@
+const uuid = require("uuid")
 module.exports.firstMessage = ({
   messaging_product = "whatsapp",
   to,
@@ -176,7 +177,7 @@ module.exports.conversationMessage = ({
     to,
     type,
     text: { body },
-    client_ref: Number(new Date())
+    client_ref: uuid.v4()
   };
 };
 // {

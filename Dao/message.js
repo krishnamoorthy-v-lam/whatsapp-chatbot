@@ -126,7 +126,8 @@ module.exports.saveSendMessage = async (receivedData, payloadData) => {
       messageId: message.id,
       type: payloadData.type,
       text: payloadData.text?.body || null,
-      interactive: payloadData.interactive || null,
+      interactive: payloadData?.interactive || null,
+      client_ref: payloadData?.client_ref,
       direction: "outgoing",
       timestamp: new Date(),
     };

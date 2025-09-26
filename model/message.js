@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 const messageSchema = new mongoose.Schema(
   {
     // Who is this conversation with (user/customer)
-
+    client_ref: {  // help to track the message status
+      type: String,
+    },
     waId: {
       // WhatsApp number (ex: 919750902797)
       type: String,
@@ -53,6 +55,7 @@ const messageSchema = new mongoose.Schema(
     mediaMimeType: {
       type: String,
     },
+
 
     // Direction (incoming = user → business, outgoing = business → user)
     direction: {
